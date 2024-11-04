@@ -1,4 +1,3 @@
-import React from "react";
 import products from "../assets/data.json";
 import Product from "./Product";
 const ProductList = () => {
