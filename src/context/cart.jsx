@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { useState } from "react";
 import { createContext } from "react";
 
@@ -17,10 +17,16 @@ const CartCtx = createContext({
   increaseQuantity: (id) => {},
   decreaseQuantity: (id) => {},
   deleteProduct: (id) => {},
+  showModal: false,
+  changeShowModal: (showModal) => {},
+  createOrder: () => {},
 });
 
 export const CartProvider = ({ children }) => {
-  const [items, setItems] = useState([]);
+  const [items, setItems] = useState(
+    JSON.parse(localStorage.getItem("cart")) || []
+  );
+  const [showModal, setShowModal] = useState(false);
   const addToCart = (product) => {
     setItems((prev) => [...prev, { ...product }]);
   };
@@ -43,6 +49,18 @@ export const CartProvider = ({ children }) => {
   const deleteProduct = (id) => {
     setItems((prev) => prev.filter((item) => item.id !== id));
   };
+  const changeShowModal = (showModal) => {
+    setShowModal(showModal);
+  };
+  const createOrder = () => {
+    setItems([]);
+    setShowModal(false);
+  };
+
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(items));
+  }, [items]);
+
   return (
     <CartCtx.Provider
       value={{
@@ -51,6 +69,9 @@ export const CartProvider = ({ children }) => {
         decreaseQuantity,
         increaseQuantity,
         deleteProduct,
+        changeShowModal,
+        showModal,
+        createOrder,
       }}
     >
       {children}
